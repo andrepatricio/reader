@@ -4,6 +4,8 @@ services:
     image: postgres:latest
     ports:
       - "5432:5432"
+    volumes:
+      - ./scrpts/script.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_USER: docker
