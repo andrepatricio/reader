@@ -11,9 +11,9 @@ services:
       POSTGRES_USER: docker
       POSTGRES_DB: docker
   goapp:
-    image: golang:1.7
+    build: .
     working_dir: /go/src/reader
-    command: go run main.go
+    command: go run main.go ./arquivos/base_teste.txt
     volumes:
       - .:/go/src/reader
     depends_on:
