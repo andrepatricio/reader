@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	host     = "localhost"
+	host     = "db"
 	port     = 5432
-	user     = "postgres"
-	password = "d13m06"
-	dbname   = "reader"
+	user     = "docker"
+	password = "docker"
+	dbname   = "docker"
 )
 
 type DadosDeCompra struct {
