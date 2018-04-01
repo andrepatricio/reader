@@ -21,14 +21,10 @@ const (
 )
 
 type DadosDeCompra struct {
-	CPF                string
-	Private            int
-	Incompleto         int
-	DataUltimaCompra   string
-	TicketMedio        float32
-	TicketUltimaCompra float32
-	LojaMaisFrequente  string
-	LojaUltimaCompra   string
+	CPF                                                   string
+	Private, Incompleto                                   int
+	TicketMedio, TicketUltimaCompra                       sql.NullFloat64
+	LojaMaisFrequente, DataUltimaCompra, LojaUltimaCompra sql.NullString
 }
 
 func parse(n int, linha string) DadosDeCompra {
@@ -43,21 +39,37 @@ func parse(n int, linha string) DadosDeCompra {
 	if err == nil {
 		dados.Incompleto = incompleto
 	}
-	dados.DataUltimaCompra = valores[3]
-	ticketMedio, err := strconv.ParseFloat(valores[4], 32)
-	if err == nil {
-		dados.TicketMedio = float32(ticketMedio)
+	if valores[3] != "NULL" {
+		dados.DataUltimaCompra = sql.NullString{valores[3], true}
+	} else {
+		dados.DataUltimaCompra = sql.NullString{valores[3], false}
 	}
-	ultimoTicket, err := strconv.ParseFloat(valores[5], 32)
-	if err == nil {
-		dados.TicketMedio = float32(ultimoTicket)
+	if valores[4] != "NULL" {
+		ticketMedio, err := strconv.ParseFloat(strings.Replace(valores[4], ",", ".", -1), 64)
+		if err != nil {
+			panic(err)
+		}
+		dados.TicketMedio = sql.NullFloat64{ticketMedio, true}
+	} else {
+		dados.TicketMedio = sql.NullFloat64{0, false}
 	}
-	dados.LojaMaisFrequente = valores[6]
-	dados.LojaUltimaCompra = valores[7]
-
+	if valores[5] != "NULL" {
+		ultimoTicket, err := strconv.ParseFloat(strings.Replace(valores[5], ",", ".", -1), 64)
+		if err != nil {
+			panic(err)
+		}
+		dados.TicketUltimaCompra = sql.NullFloat64{ultimoTicket, true}
+	} else {
+		dados.TicketUltimaCompra = sql.NullFloat64{0, false}
+	}
+	if valores[6] != "NULL" {
+		dados.LojaMaisFrequente = sql.NullString{valores[6], true}
+	}
+	if valores[7] != "NULL" {
+		dados.LojaMaisFrequente = sql.NullString{valores[7], true}
+	}
 	return dados
 }
-
 func insert(dados DadosDeCompra) {
 	configuracoesBanco := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -86,7 +98,7 @@ func find() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	rows, err := db.Query("Select cpf from DADOS_DE_COMPRA")
+	rows, err := db.Query("Select cpf from DADOS_DE_COMPRAS")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -107,11 +119,9 @@ func main() {
 		if n == 0 {
 			continue
 		}
-		if n == 4 {
-			break
-		}
 		fmt.Println("Linha numero: ", n)
 		dados := parse(n, line)
+		fmt.Println("Passou no parse: ", n)
 		insert(dados)
 	}
 	find()
