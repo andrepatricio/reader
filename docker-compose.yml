@@ -1,0 +1,24 @@
+version: "2" 
+services:   
+  db:
+   image: postgres:latest
+   ports:
+     - "5432:5432"
+   environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_USER: docker
+      POSTGRES_DB: docker   
+  web:
+    image: golang:1.7
+    working_dir: /go/src/reader
+    command: go run main.go
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/go/src/reader
+    links:
+      - db
+    environment:
+      PORT: 3000
+      CONNECTION_STRING_DEV: postgres://user:password@db/db
+      
