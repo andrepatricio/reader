@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	host     = "db"
-	port     = 5432
+	host     = "dc"
+	port     = 5431
 	user     = "docker"
 	password = "docker"
-	dbname   = "docker"
+	dbname   = "reader"
 )
 
 type DadosDeCompra struct {
@@ -86,7 +86,7 @@ func insert(dados DadosDeCompra) {
 	sql := "insert into dados_de_compras "
 	sql += "(CPF, PRIVATE, INCOMPLETO, DT_ULTIMA_COMPRA, "
 	sql += "TICKET_MEDIO, TICKET_ULTIMA_COMPRA, "
-	sql += "LOJA_MAIS_FREQUENTADA, ULTIMA_LOJA) values ($1, $2, $3, to_date($4), $5, $6, $7, $8)"
+	sql += "LOJA_MAIS_FREQUENTADA, ULTIMA_LOJA) values ($1, $2, $3, $4, $5, $6, $7, $8)"
 	_, err = db.Exec(sql, dados.CPF, dados.Private, dados.Incompleto,
 		dados.DataUltimaCompra, dados.TicketMedio, dados.TicketUltimaCompra,
 		dados.LojaMaisFrequente, dados.LojaUltimaCompra)
@@ -110,7 +110,7 @@ func find() {
 }
 
 func main() {
-	data, err := ioutil.ReadFile("./arquivos/teste2.txt")
+	data, err := ioutil.ReadFile("./arquivos/base_teste.txt")
 	checkErr(err)
 	for n, line := range strings.Split(string(data), "\n") {
 		if n == 0 {
@@ -123,11 +123,11 @@ func main() {
 			fmt.Println(err)
 		}
 	}
-	find()
+	//find()
 }
 func checkErr(err error) {
-	fmt.Fprintf(os.Stderr, "dup: %v\n", err)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "dup: %v\n", err)
 		panic(err)
 	}
 }
