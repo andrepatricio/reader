@@ -5,7 +5,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./scrpts/script.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/:/docker-entrypoint-initdb.d/
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_USER: docker

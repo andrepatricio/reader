@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	host     = "dc"
-	port     = 5431
+	host     = "db"
+	port     = 5432
 	user     = "docker"
 	password = "docker"
-	dbname   = "reader"
+	dbname   = "docker"
 )
 
 type DadosDeCompra struct {
@@ -94,23 +94,8 @@ func insert(dados DadosDeCompra) {
 	db.Close()
 }
 
-func find() {
-	configuracoesBanco := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", configuracoesBanco)
-	checkErr(err)
-	rows, err := db.Query("Select cpf from DADOS_DE_COMPRAS")
-	checkErr(err)
-	defer rows.Close()
-	for rows.Next() {
-		var cpf string
-		rows.Scan(&cpf)
-		fmt.Printf("%s \n", cpf)
-	}
-}
-
 func main() {
-	data, err := ioutil.ReadFile("./arquivos/base_teste.txt")
+	data, err := ioutil.ReadFile(os.Args[1])
 	checkErr(err)
 	for n, line := range strings.Split(string(data), "\n") {
 		if n == 0 {
@@ -123,7 +108,6 @@ func main() {
 			fmt.Println(err)
 		}
 	}
-	//find()
 }
 func checkErr(err error) {
 	if err != nil {
